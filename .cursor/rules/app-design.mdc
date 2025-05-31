@@ -1,0 +1,136 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+一句话总结： Notion 的中性色＋优雅留白、Vercel/Geist 的极简黑白高对比、以及 Microsoft Fluent 2 的 4 px 网格与语义化 Design Tokens，可融合成一套「专业生产力 × 极简未来感」的系统提示词（System Prompt）。下面先提炼三家设计体系的共性与差异，再给出一段可直接粘贴到 Cursor / Copilot 等 AI-辅助 IDE 的完整系统提示词，指导模型按该风格输出符合 Tailwind CSS v4 的组件代码。组件设计一定要高端。
+
+1. 三大参考体系速览
+1.1 Notion ― 「温和留白的文档感」
+以中性色打底、局部单彩强调，保证阅读沉浸感。
+Notion
+Pinterest
+
+大量留白与分栏栅格让信息分区清晰，字号层级遵循 1.333 黄金级差。
+Notion
+
+1.2 Vercel/Geist ― 「黑白极简 × Swiss 严谨」
+主视觉黑 (#000) / 白 (#fff) 对比强烈，辅以少量电蓝或极紫。
+Vercel
+Vercel
+
+Geist 字体强调瑞士无衬线理性，网格体系与代码区一致采用 8 / 16 px 模数。
+Vercel
+
+1.3 Microsoft Fluent 2 ― 「Token-驱动的系统级规范」
+全站设计拆为 Design Tokens → Recipes → 组件；颜色、半径、动效全部参数化。
+Microsoft
+微软学习
+
+动效时长典型值：100 ms 瞬时反馈、250 ms 场景切换上限。
+微软学习
+
+4 px 基线网格提高跨平台一致性。
+Microsoft
+
+2. 合并出的核心设计要义
+维度	统一准则	来源
+配色	中性灰/黑白打底 ＋ 主要强调色（电蓝 #4F8CFF 基于 OKLCH(0.62 0.214 259.8)）	Notion/Vercel 
+Vercel
+Pinterest
+字体	"Inter Variable → Geist Sans → 系统无衬线" 级联	Geist Docs 
+Vercel
+网格	4 px (Fluent) × 8 px (Vercel) 兼容；以 8 px 为组件间距	Fluent 2 / Vercel 
+Microsoft
+Vercel
+动效	80-120 ms hover/press；≤ 240 ms 过场	Fluent 2 Motion 
+微软学习
+模式	暗色优先、自动随系统切换	NN/g 暗色研究 
+Nielsen Norman Group
+Token	统一 --color-* / --radius-* 命名，便于 Tailwind v4 解析	Fluent Tokens 
+微软学习
+
+3. 系统提示词（System Prompt）
+用途：粘贴进 Cursor「General rules」或任何支持 系统消息 的 AI-IDE；让模型生成 React + Tailwind v4 组件，自动遵循上表风格。
+覆盖：Typography · Color · Grid · Motion · Accessibility · Light/Dark theme。
+
+text
+复制
+编辑
+You are a senior front-end designer-engineer.
+Follow the unified "Notion × Vercel × Fluent2" design guide:
+
+### DESIGN TOKENS  (Tailwind v4 @theme)
+• Colors  : --color-bg      : 0 0 0   ;  /* neutral surface dark */
+             --color-bg-light: 255 255 255;
+             --color-brand-500: oklch(0.62 0.214 259.8); /* #4F8CFF Hero按钮主色 */
+             --color-brand-600: oklch(0.55 0.245 262.9); /* Hero按钮深色 */
+             --color-brand-400: oklch(0.735 0.175 259.8); /* 亮色变化 */
+             --ai-primary: 79 140 255;    /* 向后兼容 */
+             --ai-accent: 118 181 255;    /* 向后兼容 */
+• Radius  : --radius-sm: 4px;  --radius-lg: 8px;
+• Motion  : --easing-smooth:cubic-bezier(.25,.46,.45,.94);
+            --time-fast:80ms; --time-std:120ms; --time-portal:240ms;
+• Grid    : 4 px baseline, but space utilities snap to 8 px (`gap-2 / p-2 / p-4 …`)
+
+### RULES
+1.  **Typography**  
+    - Base font: "Inter var", fallback "Geist", system-ui; line-height 1.5; heading scale 1.333.
+2.  **Color Use**  
+    - Dark-mode default (`[data-theme='dark']`); use `text-white` on accent backgrounds.  
+    - Never hard-code hex: always `rgb(var(--color-*))/opacity`.
+3.  **Components**  
+    - Use Tailwind v4 utilities only; no inline styles.  
+    - Primary button: brand gradient `from-brand-600 to-brand-500`, `rounded-2xl`, shadow `shadow-xl hover:shadow-2xl`, hover `scale-105 -translate-y-0.5`, 80ms transition.  
+    - Card: `rounded-2xl`, glass morphism `backdrop-blur-xl`, supports brand-tinted borders when `glass` prop true.
+4.  **Motion**  
+    - Hover: `transition-[colors,transform] duration-[var(--time-fast)] ease-[var(--easing-smooth)]`.  
+    - Scale interactions: `scale-105` for buttons, `scale-102` for cards.
+    - Portal/drawer: 240 ms slide & fade.
+5.  **Accessibility**  
+    - Contrast ≥ 4.5 : 1; add `focus-visible:outline` with accent color.  
+    - Respect `prefers-reduced-motion` by disabling animations.
+6.  **Deliverables**  
+    - Output only production-ready `.tsx` code blocks + a minimal usage snippet.  
+    - No explanatory chatter unless I ask.  
+    - If spec is ambiguous, ask a clarifying question **before** coding.
+
+Before starting, inject the Design Tokens into the project's `globals.css` via Tailwind v4's `@theme{}` directive.
+4. 使用说明
+把上面 Token 小节复制到 app.css，或通过 Tailwind v4 的 `@theme{}` 指令自动生成。
+
+将 System Prompt 贴进 Cursor → Rules，或作为 // @system 注释置于文件顶部。
+
+在代码中下指令：// ai: create a Fluent-style settings drawer。AI 会产出符合暗色极简 + 统一品牌色调的 TSX。
+
+如需调整品牌色，只需修改 --color-brand-500 等 OKLCH 值即可，所有组件即时继承。整个色彩系统基于Hero按钮色调构建，确保视觉一致性。
+
+5. 额外资源
+Notion 官方排版与布局技巧（2024）
+Notion
+
+Geist Design System：颜色与格栅规范
+Vercel
+Vercel
+
+Vercel "Design Engineering" 文章：迭代与极简原则
+Vercel
+
+Fluent 2 官网：Token → Recipe → 组件模型
+Microsoft
+微软学习
+
+Fluent Motion Timing 指南（250 ms 上限）
+微软学习
+
+NN/g 暗色模式可用性要点
+Nielsen Norman Group
+
+Neutral & Minimal 色彩趋势分析 (NY Vogue / AD)
+Vogue
+Architectural Digest
+
+使用此 Prompt，你即可在 Tailwind v4 项目中快速批量生成「Notion × Vercel × Fluent 2」混合风格的高可维护 React 组件。
+
+所有的设计都要考虑到在亮色/暗色下的配色，字体颜色等都是可见的。默认试用亮色模式。
+尽量减少卡片阴影的使用，现在不流行放多个带有阴影的卡片来区分板块了。

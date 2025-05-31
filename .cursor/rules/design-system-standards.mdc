@@ -1,0 +1,217 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 设计系统标准
+
+## 设计理念
+
+本项目融合 **Notion 的中性色优雅留白** + **Vercel/Geist 的极简黑白高对比** + **Microsoft Fluent 2 的 4px 网格与语义化 Design Tokens**，形成「专业生产力 × 极简未来感」的设计体系。
+
+## 核心设计原则
+
+### 配色系统
+- **主色调**: 中性灰/黑白打底，带有统一的品牌色调
+- **强调色**: 电蓝 `#4F8CFF` 作为主要品牌色，基于 OKLCH(0.62 0.214 259.8)
+- **次要强调色**: 基于相同色相的变化，创建和谐的色彩层级
+- **背景**: 纯白 `#FFFFFF` / 深黑 `#000000` 高对比
+
+### 字体系统
+- **主字体**: "Inter Variable" → "Geist Sans" → 系统无衬线
+- **字号比例**: 1.333 黄金级差
+- **行高**: 1.5 基准
+
+### 网格系统
+- **基线网格**: 4px
+- **组件间距**: 8px 模数
+- **兼容性**: 4px (Fluent) × 8px (Vercel)
+
+## TailwindCSS 配置
+
+### CSS 变量定义
+```css
+:root {
+  --color-bg: 255 255 255;
+  --color-bg-dark: 0 0 0;
+  
+  /* 基于Hero按钮的统一品牌色系统 */
+  --color-brand-500: oklch(0.62 0.214 259.8);  /* 主要品牌色 #4F8CFF */
+  --color-brand-600: oklch(0.55 0.245 262.9);  /* 深色变化 */
+  --color-brand-400: oklch(0.735 0.175 259.8); /* 亮色变化 */
+  
+  /* 向后兼容变量 */
+  --ai-primary: 79 140 255;        /* 映射到 brand-500 */
+  --ai-accent: 118 181 255;        /* 映射到 brand-400 */
+  
+  --radius-sm: 4px;
+  --radius-lg: 8px;
+  --radius-2xl: 16px;
+  --easing-smooth: cubic-bezier(.25,.46,.45,.94);
+  --time-fast: 80ms;
+  --time-std: 120ms;
+  --time-portal: 240ms;
+}
+```
+
+### 使用规范
+```tsx
+// ✅ 使用语义化变量和新的品牌色系统
+className="bg-gradient-to-r from-brand-600 to-brand-500 text-white"
+className="bg-[rgb(var(--ai-primary))] text-white"
+className="transition-colors duration-[var(--time-fast)]"
+
+// ✅ 使用OKLCH品牌色
+className="bg-[oklch(0.62_0.214_259.8)] shadow-lg"
+
+// ❌ 避免硬编码颜色
+className="bg-blue-500"
+```
+
+## 组件设计标准
+
+### 按钮设计
+- **主按钮**: `bg-gradient-to-r from-brand-600 to-brand-500` + `rounded-2xl` + `shadow-xl`
+- **样式**: 与Hero区域"开始您的旅程"按钮完全一致的设计
+- **过渡动画**: 80ms 瞬时反馈，hover时 `scale(1.05)` + `translateY(-2px)`
+- **状态变化**: `transition-[colors,transform] duration-[var(--time-fast)]`
+- **暗色模式**: 自动调整为 `from-brand-500 to-brand-400` 渐变
+
+### 卡片设计
+- **圆角**: `rounded-2xl` (16px) 现代化设计
+- **阴影**: `shadow-glass` 基础，`shadow-glass-strong` hover
+- **玻璃效果**: 支持 `backdrop-blur-xl` 当 `glass` prop 为 true
+- **边框**: 使用品牌色调的透明边框效果
+
+### 动效规范
+- **Hover/Press**: 80-120ms
+- **场景切换**: ≤ 240ms
+- **缓动函数**: `cubic-bezier(.25,.46,.45,.94)`
+
+## 响应式设计
+
+### 断点系统
+- **移动端**: < 640px
+- **平板**: 640px - 1024px  
+- **桌面**: > 1024px
+
+### 间距规范
+```tsx
+// 使用 8px 模数间距
+gap-2    // 8px
+p-4      // 16px
+p-6      // 24px
+p-8      // 32px
+```
+
+## 无障碍标准
+
+### 对比度要求
+- **文本对比度**: ≥ 4.5:1
+- **焦点指示**: `focus-visible:outline` + 强调色
+- **动画尊重**: `prefers-reduced-motion` 禁用动画
+
+### 语义化标记
+- 使用恰当的 HTML5 语义标签
+- 提供 `aria-label` 和 `alt` 属性
+- 支持键盘导航
+
+## 暗色模式支持
+
+### 配色切换
+```tsx
+// 自动适配暗色模式
+className="bg-white dark:bg-gray-900"
+className="text-gray-900 dark:text-white"
+```
+
+### 主题检测
+- 默认跟随系统偏好
+- 支持手动切换
+- 使用 `[data-theme='dark']` 选择器
+
+## 高密度UI组件变体
+
+### 紧凑卡片设计
+```tsx
+// 标准卡片
+className="bg-white rounded-2xl p-6"
+
+// 紧凑卡片 - 数据密集场景
+className="bg-white rounded-xl p-4"
+
+// 微型卡片 - 最高密度
+className="bg-white rounded-lg p-3"
+```
+
+### 紧凑进度仪表板
+```tsx
+// 高密度统计卡片
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <div className="bg-white rounded-xl p-4">
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 bg-brand-500 rounded-lg">
+        <Icon className="w-4 h-4 text-white" />
+      </div>
+      <div>
+        <p className="text-lg font-bold">{value}</p>
+        <p className="text-xs text-neutral-500">{label}</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### 横向滚动容器
+```tsx
+// 学期时间线等数据表格
+<div className="overflow-x-auto">
+  <div className="flex min-w-max">
+    {items.map(item => (
+      <div className="flex-shrink-0 w-64 border-r">
+        <div className="p-2 h-96 overflow-y-auto">
+          {/* 内容 */}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+## 组件开发规范
+
+1. **模块化设计** - 每个组件独立、可复用
+2. **类型安全** - 完整的 TypeScript 支持
+3. **性能优化** - 避免不必要的重渲染
+4. **测试覆盖** - 关键组件必须有测试
+
+## 设计 Token 命名
+
+```tsx
+// 品牌色 Token - 基于Hero按钮色调
+--color-brand-50     // 极浅品牌色
+--color-brand-500    // 主要品牌色 (Hero按钮)
+--color-brand-600    // 深色品牌色 (Hero按钮深色)
+--color-brand-950    // 极深品牌色
+
+// 传统颜色 Token (向后兼容)
+--color-bg           // 背景色
+--ai-primary         // 主强调色 (映射到 brand-500)
+--ai-accent          // 次强调色 (映射到 brand-400)
+
+// 尺寸 Token  
+--radius-sm          // 小圆角 (4px)
+--radius-lg          // 大圆角 (8px)  
+--radius-2xl         // 现代圆角 (16px)
+
+// 动效 Token
+--time-fast          // 快速动画 (80ms)
+--time-std           // 标准动画 (120ms)
+--time-portal        // 页面切换 (240ms)
+
+// 阴影 Token
+--shadow-glass       // 玻璃态阴影
+--shadow-brand       // 品牌色阴影
+```
+
+通过这套设计系统，确保整个 Transfer AI 平台具有统一的视觉语言和交互体验。

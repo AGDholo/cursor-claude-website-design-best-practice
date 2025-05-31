@@ -1,0 +1,153 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 高密度UI设计模式
+
+## 设计理念
+
+基于用户反馈优化的高信息密度设计模式，专为数据密集型应用场景设计，最大化屏幕空间利用率。
+
+## 核心原则
+
+### 1. 横向优先布局
+- 优先使用横向滚动而非垂直滚动
+- 数据表格和时间线采用横向布局
+- 减少页面高度，提高一屏信息密度
+
+### 2. 紧凑组件系统
+- 卡片间距从 `p-6` 减少到 `p-3` 或 `p-4`
+- 图标尺寸从 `w-12 h-12` 优化到 `w-8 h-8`
+- 字体大小从 `text-2xl` 降级到 `text-lg`
+- 按钮 padding 从 `px-4 py-2` 优化到 `px-3 py-1.5`
+
+### 3. 固定高度容器
+- 使用 `h-96` (384px) 等固定高度避免页面过长
+- 内部内容使用 `overflow-y-auto` 实现局部滚动
+- 关键信息始终保持在首屏可见
+
+## 实施案例
+
+### 学期时间线设计
+参考 [app/routes/dashboard/course-planning.tsx](mdc:app/routes/dashboard/course-planning.tsx) 的实现：
+
+```tsx
+// 横向学期布局
+<div className="overflow-x-auto">
+  <div className="flex min-w-max">
+    {semesterData.map((semester) => (
+      <div className="flex-shrink-0 w-64 border-r">
+        {/* 学期头部 - 紧凑设计 */}
+        <div className="p-3 border-b">
+          <div className="flex items-center gap-2">
+            <Icon className="w-4 h-4" />
+            <h4 className="text-sm font-semibold">{semester.shortName}</h4>
+          </div>
+        </div>
+        
+        {/* 课程列表 - 固定高度 */}
+        <div className="p-2 h-96 overflow-y-auto">
+          {/* 紧凑课程卡片 */}
+          <div className="bg-neutral-50 rounded-lg p-3">
+            <h5 className="text-sm font-medium">{course.code}</h5>
+            <p className="text-xs text-neutral-600">{course.name}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+### 紧凑进度仪表板
+```tsx
+// 2x2网格 (移动端) / 1x4网格 (桌面端)
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <div className="bg-white rounded-xl p-4">
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 bg-green-500 rounded-lg">
+        <Icon className="w-4 h-4 text-white" />
+      </div>
+      <div>
+        <p className="text-lg font-bold">{value}</p>
+        <p className="text-xs text-neutral-500">{label}</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+## CSS 工具类
+
+### 高密度布局类
+```css
+.dense-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.horizontal-scroll-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.fixed-height-content {
+  height: 24rem; /* 384px */
+  overflow-y: auto;
+}
+```
+
+### 紧凑卡片变体
+```css
+.card-dense {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.card-micro {
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+}
+```
+
+## 响应式策略
+
+### 移动端适配
+- 横向布局在移动端改为垂直堆叠
+- 固定高度在小屏幕上调整为 `h-64` (256px)
+- 使用 `snap-x` 实现触摸友好的横向滚动
+
+### 桌面端优化
+- 利用更大屏幕显示更多列
+- 增加悬停效果提升交互体验
+- 支持键盘导航
+
+## 性能考虑
+
+### 虚拟化
+- 对于大量数据使用虚拟滚动
+- 延迟加载非关键内容
+- 避免过度渲染
+
+### 动画优化
+- 使用 `transform` 而非 `margin/padding` 改变
+- 启用 `will-change` 提示浏览器优化
+- 减少动画时长到 80-120ms
+
+## 最佳实践
+
+1. **信息层级**: 使用字体大小和颜色区分信息重要性
+2. **视觉分组**: 用空白和分割线组织相关内容
+3. **状态指示**: 用颜色和图标快速传达状态信息
+4. **可扫描性**: 确保用户能快速扫描和定位信息
+
+## 避免事项
+
+- ❌ 过度压缩导致可读性下降
+- ❌ 忽略触摸目标最小尺寸 (44px)
+- ❌ 牺牲可访问性换取密度
+- ❌ 在小屏幕上强制使用横向布局

@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+@theme {
+  /* 字体系统 */
+  --font-sans: "Inter var", "Geist Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    
+  /* 颜色系统 */
+  --color-bg: 255 255 255;
+  --color-bg-dark: 0 0 0;
+  
+  /* 品牌色系统 */
+  --color-brand-50: oklch(0.97 0.03 259.8);  /* 极浅品牌色 */
+  --color-brand-100: oklch(0.94 0.06 259.8); /* 很浅品牌色 */
+  --color-brand-200: oklch(0.89 0.09 259.8); /* 浅品牌色 */
+  --color-brand-300: oklch(0.82 0.12 259.8); /* 中浅品牌色 */
+  --color-brand-400: oklch(0.735 0.175 259.8); /* 亮色变化 */
+  --color-brand-500: oklch(0.62 0.214 259.8);  /* 主要品牌色 #4F8CFF */
+  --color-brand-600: oklch(0.55 0.245 262.9);  /* 深色变化 */
+  --color-brand-700: oklch(0.48 0.22 265.0);   /* 中深品牌色 */
+  --color-brand-800: oklch(0.40 0.18 267.0);   /* 深品牌色 */
+  --color-brand-900: oklch(0.32 0.14 269.0);   /* 很深品牌色 */
+  --color-brand-950: oklch(0.24 0.10 271.0);   /* 极深品牌色 */
+  
+  /* 兼容旧版变量 */
+  --ai-primary: 79 140 255;        /* 映射到 brand-500 */
+  --ai-accent: 118 181 255;        /* 映射到 brand-400 */
+  
+  /* 中性色系统 */
+  --color-neutral-50: 250 250 250;
+  --color-neutral-100: 245 245 245;
+  --color-neutral-200: 229 229 229;
+  --color-neutral-300: 212 212 212;
+  --color-neutral-400: 163 163 163;
+  --color-neutral-500: 115 115 115;
+  --color-neutral-600: 82 82 82;
+  --color-neutral-700: 64 64 64;
+  --color-neutral-800: 38 38 38;
+  --color-neutral-900: 23 23 23;
+  --color-neutral-950: 10 10 10;
+  
+  /* 圆角变量 */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+  
+  /* 动效变量 */
+  --easing-smooth: cubic-bezier(.25,.46,.45,.94);
+  --easing-snappy: cubic-bezier(.2,0,0,1);
+  --time-fast: 80ms;
+  --time-std: 120ms;
+  --time-portal: 240ms;
+  
+  /* 阴影变量 */
+  --shadow-glass: 0 4px 12px rgb(0 0 0 / 0.05);
+  --shadow-glass-strong: 0 8px 16px rgb(0 0 0 / 0.1);
+  --shadow-brand: 0 8px 16px rgb(var(--ai-primary) / 0.2);
+  
+  /* 栅格系统 */
+  --grid-gap-base: 16px;
+  --grid-gap-dense: 8px;
+}
+
+/* 设置基本样式 */
+html,
+body {
+  @apply bg-white dark:bg-black text-neutral-900 dark:text-white;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* 按钮恢复指针样式 */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* ===== 组件样式系统 ===== */
+
+/* 按钮样式 */
+.btn-brand {
+  @apply bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-2xl px-4 py-2 
+         shadow-xl hover:shadow-2xl transition-[transform,shadow] duration-[var(--time-fast)] ease-[var(--easing-smooth)]
+         hover:scale-105 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-brand-400;
+}
+
+.btn-secondary {
+  @apply bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-white rounded-xl px-3 py-1.5
+         transition-colors duration-[var(--time-fast)] ease-[var(--easing-smooth)]
+         hover:bg-neutral-200 dark:hover:bg-neutral-700 focus-visible:outline focus-visible:outline-brand-400;
+}
+
+.btn-micro {
+  @apply px-3 py-1.5 text-sm rounded-lg font-medium
+         transition-colors duration-[var(--time-fast)] ease-[var(--easing-smooth)];
+}
+
+/* 卡片样式 */
+.card-glass {
+  @apply bg-white/70 dark:bg-black/70 backdrop-blur-xl rounded-2xl p-6
+         border border-white/20 dark:border-white/10 shadow-[var(--shadow-glass)]
+         hover:shadow-[var(--shadow-glass-strong)] transition-shadow duration-[var(--time-fast)];
+}
+
+.card-brand {
+  @apply bg-gradient-to-br from-brand-500/10 to-brand-600/5 backdrop-blur-md
+         border border-brand-500/20 rounded-2xl p-6;
+}
+
+.card-dense {
+  @apply bg-white dark:bg-neutral-900 rounded-xl p-4
+         shadow-sm hover:shadow transition-shadow duration-[var(--time-fast)];
+}
+
+.card-micro {
+  @apply bg-white dark:bg-neutral-900 rounded-lg p-3;
+}
+
+/* 数据可视化组件 */
+.stat-card-dense {
+  @apply bg-white dark:bg-neutral-900 rounded-xl p-4 flex items-center gap-3;
+}
+
+.stat-icon {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center text-white;
+}
+
+.stat-value {
+  @apply text-lg font-bold;
+}
+
+.stat-label {
+  @apply text-xs text-neutral-500 dark:text-neutral-400;
+}
+
+/* 布局工具类 */
+.dense-grid {
+  @apply grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+/* 自定义滚动条 */
+@utility scrollbar-thin {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--color-neutral-300) / 0.5);
+    border-radius: var(--radius-full);
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(var(--color-neutral-400) / 0.8);
+  }
+  
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-neutral-300) / 0.5) transparent;
+}
+
+.horizontal-scroll-container {
+  @apply overflow-x-auto scrollbar-thin;
+}
+
+.fixed-height-content {
+  @apply h-96 overflow-y-auto;
+}
+
+/* 高级卡片组件 */
+.data-card {
+  @apply bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-100 dark:border-neutral-800
+         transition-all duration-[var(--time-std)] ease-[var(--easing-smooth)]
+         hover:translate-y-[-2px] hover:shadow-md;
+}
+
+/* 标签组件 */
+.tag {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+}
+
+.tag-blue {
+  @apply bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-100;
+}
+
+.tag-green {
+  @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-100;
+}
+
+.tag-red {
+  @apply bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-100;
+}
+
+.tag-purple {
+  @apply bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-100;
+}
+
+/* 过渡效果 */
+.transition-smooth {
+  @apply transition-all duration-[var(--time-std)] ease-[var(--easing-smooth)];
+}
+
+.transition-snappy {
+  @apply transition-all duration-[var(--time-fast)] ease-[var(--easing-snappy)];
+}
+
+/* 表格样式 */
+.table-dense {
+  @apply w-full text-sm;
+}
+
+.table-dense th {
+  @apply py-2 px-3 text-left font-medium text-neutral-500 dark:text-neutral-400;
+}
+
+.table-dense td {
+  @apply py-2 px-3 border-t border-neutral-100 dark:border-neutral-800;
+}
+
+/* 输入框样式 */
+.input-brand {
+  @apply px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700
+         bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white
+         focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500;
+}
+
+/* 打字动画效果 */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--color-brand-500) }
+}
