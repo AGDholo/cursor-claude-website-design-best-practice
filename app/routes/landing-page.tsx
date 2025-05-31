@@ -15,7 +15,7 @@ export default function LandingPage() {
       
       {/* Hero 部分 */}
       <section className="pt-32 pb-20 px-4">
-        <div className="container mx-auto max-w-6xl">
+        <div className="container mx-auto ">
           <div className={`flex flex-col md:flex-row items-center transition-opacity duration-[800ms] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="md:w-1/2 mb-12 md:mb-0">
               <h1 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">
