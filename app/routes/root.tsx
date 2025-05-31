@@ -1,26 +1,35 @@
 import { Outlet, Scripts, ScrollRestoration } from "react-router";
 import { ThemeToggle } from "../components/ThemeToggle";
 
-// 添加客户端脚本，在页面加载前应用保存的主题
+// 添加优化的主题脚本，确保页面加载前应用正确的主题
 const ThemeScript = () => {
   return (
     <script
       dangerouslySetInnerHTML={{
         __html: `
           (function() {
-            // 获取保存的主题
-            const theme = localStorage.getItem('theme');
-            
-            // 获取系统主题
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            
-            // 应用主题
-            if (theme === 'dark' || (theme === null && systemTheme === 'dark')) {
-              document.documentElement.classList.add('dark');
-              document.documentElement.setAttribute('data-theme', 'dark');
-            } else {
-              document.documentElement.classList.remove('dark');
-              document.documentElement.removeAttribute('data-theme');
+            try {
+              // 获取保存的主题
+              const theme = localStorage.getItem('theme');
+              
+              // 获取系统主题偏好
+              const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+              
+              // 应用主题
+              if (theme === 'dark' || (theme === 'system' || theme === null) && systemTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (theme) document.documentElement.setAttribute('data-theme', theme);
+              } else if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+              } else {
+                // 系统是亮色
+                document.documentElement.classList.remove('dark');
+                if (theme === 'system') document.documentElement.setAttribute('data-theme', 'system');
+              }
+            } catch (e) {
+              // 如果出错，使用默认亮色主题
+              console.error('主题应用失败:', e);
             }
           })();
         `,
@@ -47,7 +56,7 @@ export default function Root() {
                 <a href="/" className="text-lg font-semibold">
                   设计系统
                 </a>
-                <a href="/design-system" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors duration-fast">
+                <a href="/design-system" className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors duration-[var(--time-fast)]">
                   组件库
                 </a>
               </nav>
