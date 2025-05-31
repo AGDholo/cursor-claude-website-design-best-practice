@@ -1,9 +1,31 @@
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring, stagger, useInView, AnimatePresence } from 'motion/react';
 
 export default function LandingPage() {
   const [isLoaded, setIsLoaded] = useState(false);
+  
+  // 获取滚动信息，用于视差效果
+  const { scrollYProgress } = useScroll();
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const smoothParallaxY = useSpring(parallaxY, { 
+    stiffness: 100, 
+    damping: 30,
+    restDelta: 0.001
+  });
+  
+  // 用于特性部分的引用
+  const featuresRef = useRef(null);
+  const isInViewFeatures = useInView(featuresRef, { once: true, amount: 0.2 });
+  
+  // 用于工作流程部分的引用
+  const workflowRef = useRef(null);
+  const isInViewWorkflow = useInView(workflowRef, { once: true, amount: 0.1 });
+  
+  // 用于示例代码部分的引用
+  const codeExamplesRef = useRef(null);
+  const isInViewCodeExamples = useInView(codeExamplesRef, { once: true, amount: 0.1 });
   
   useEffect(() => {
     setIsLoaded(true);
@@ -14,103 +36,216 @@ export default function LandingPage() {
       <Navbar />
       
       {/* Hero 部分 */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-32 pb-20 px-4 overflow-hidden relative">
+        {/* 背景视差元素 */}
+        <motion.div 
+          className="absolute top-0 right-0 w-full h-full pointer-events-none opacity-30 dark:opacity-20"
+          style={{ y: smoothParallaxY }}
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <path d="M173.3,178.3c-12.7,0-23-10.3-23-23s10.3-23,23-23s23,10.3,23,23S186,178.3,173.3,178.3z" 
+                 fill="none" stroke="url(#grad1)" strokeWidth="2" />
+            <path d="M276.7,268.3c-12.7,0-23-10.3-23-23s10.3-23,23-23s23,10.3,23,23S289.4,268.3,276.7,268.3z" 
+                 fill="none" stroke="url(#grad2)" strokeWidth="2" />
+            <defs>
+              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgb(var(--color-brand-400))" />
+                <stop offset="100%" stopColor="rgb(var(--color-brand-600))" />
+              </linearGradient>
+              <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgb(var(--color-brand-500))" />
+                <stop offset="100%" stopColor="rgb(var(--color-brand-700))" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </motion.div>
+        
         <div className="container mx-auto">
-          <div className={`flex flex-col md:flex-row items-center transition-opacity duration-[800ms] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="flex flex-col md:flex-row items-center relative z-10">
             <div className="md:w-1/2 mb-12 md:mb-0">
-              <h1 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-                <span className="block transform transition-transform duration-[var(--time-portal)] delay-100 translate-y-0 opacity-100" style={{ 
-                  transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-                  opacity: isLoaded ? 1 : 0,
-                  transitionProperty: 'transform, opacity',
-                }}>Cursor AI 设计规则</span>
-                <span className="block bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-brand-500 transform transition-transform duration-[var(--time-portal)] delay-200" style={{ 
-                  transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-                  opacity: isLoaded ? 1 : 0,
-                  transitionProperty: 'transform, opacity',
-                }}>
+              <motion.h1 
+                className="text-5xl font-bold mb-6 text-gray-900 dark:text-white"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.span 
+                  className="block" 
+                  initial={{ y: 20, opacity: 0 }} 
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 30,
+                    delay: 0.1 
+                  }}
+                >
+                  Cursor AI 设计规则
+                </motion.span>
+                <motion.span 
+                  className="block bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-brand-500"
+                  initial={{ y: 20, opacity: 0 }} 
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 30,
+                    delay: 0.3 
+                  }}
+                >
                   配置指南
-                </span>
-              </h1>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-lg transform transition-all duration-[var(--time-portal)] delay-300" style={{ 
-                transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-                opacity: isLoaded ? 1 : 0
-              }}>
+                </motion.span>
+              </motion.h1>
+              
+              <motion.p 
+                className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-lg"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 30,
+                  delay: 0.5 
+                }}
+              >
                 使用 Tailwind CSS v4 + Context7 + Claude 4，配置专业的设计规则系统，实现高效一致的界面开发
-              </p>
-              <div className="flex flex-wrap gap-4 transform transition-all duration-[var(--time-portal)] delay-400" style={{ 
-                transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-                opacity: isLoaded ? 1 : 0
-              }}>
-                <button className="btn-brand">
+              </motion.p>
+              
+              <motion.div 
+                className="flex flex-wrap gap-4"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 30,
+                  delay: 0.7 
+                }}
+              >
+                <motion.a 
+                  href="https://gist.github.com/AGDholo/656c0cbbceb68d44e6b18954196f3ae2"
+                  className="btn-brand inline-block text-center"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   开始配置
-                </button>
-                <button className="px-6 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-[var(--time-fast)]">
-                  查看示例
-                </button>
-              </div>
+                </motion.a>
+                <motion.a 
+                  href="https://transferai.app/"
+                  className="px-6 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-[var(--time-fast)] inline-block text-center"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  演示网站
+                </motion.a>
+              </motion.div>
             </div>
-            <div className="md:w-1/2 flex justify-center transform transition-all duration-[var(--time-portal)] delay-300" style={{ 
-              transform: isLoaded ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.95)',
-              opacity: isLoaded ? 1 : 0
-            }}>
-              <div className="relative">
+            
+            <div className="md:w-1/2 flex justify-center">
+              <motion.div 
+                className="relative"
+                initial={{ y: 40, opacity: 0, scale: 0.95 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 200, 
+                  damping: 25,
+                  delay: 0.4 
+                }}
+              >
                 <div className="w-80 h-80 rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 opacity-20 blur-3xl absolute -z-10"></div>
                 <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-8 shadow-xl w-[420px] max-w-full">
                   <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 mb-6">
                     <div className="flex items-center mb-4">
-                      <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                      <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <motion.div 
+                        className="w-3 h-3 rounded-full bg-red-500 mr-2"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.8, type: "spring" }}
+                      ></motion.div>
+                      <motion.div 
+                        className="w-3 h-3 rounded-full bg-yellow-500 mr-2"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.9, type: "spring" }}
+                      ></motion.div>
+                      <motion.div 
+                        className="w-3 h-3 rounded-full bg-green-500"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 1.0, type: "spring" }}
+                      ></motion.div>
                     </div>
                     <div className="font-mono text-sm w-full">
                       <div className="text-brand-500">// 设计规则示例</div>
                       <div className="text-gray-700 dark:text-gray-300 w-full">
-                        <div className="typing-effect" style={{
-                          overflow: 'hidden',
-                          borderRight: '0.15em solid var(--color-brand-500)',
-                          whiteSpace: 'nowrap',
-                          animation: 'typing 3.5s steps(40, end) 1s forwards, blink-caret 0.75s step-end infinite',
-                          maxWidth: '100%'
-                        }}>
+                        <motion.div 
+                          className="overflow-hidden whitespace-nowrap"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ 
+                            duration: 1.5, 
+                            delay: 1.2,
+                            ease: "easeInOut" 
+                          }}
+                        >
                           <span>@import "tailwindcss";</span>
-                        </div>
-                        <div className="typing-effect-delay-1" style={{
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          width: '0',
-                          animation: 'typing 3.5s steps(40, end) 2s forwards',
-                          maxWidth: '100%'
-                        }}>
+                        </motion.div>
+                        <motion.div 
+                          className="overflow-hidden whitespace-nowrap"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ 
+                            duration: 1.5, 
+                            delay: 1.7,
+                            ease: "easeInOut" 
+                          }}
+                        >
                           <span>@theme {`{`}</span>
-                        </div>
-                        <div className="ml-4 typing-effect-delay-2" style={{
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          width: '0',
-                          animation: 'typing 3.5s steps(40, end) 2.5s forwards',
-                          maxWidth: '100%'
-                        }}>
+                        </motion.div>
+                        <motion.div 
+                          className="ml-4 overflow-hidden whitespace-nowrap"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ 
+                            duration: 2, 
+                            delay: 2.2,
+                            ease: "easeInOut" 
+                          }}
+                        >
                           <span>--color-brand-500: oklch(0.62 0.214 259.8);</span>
-                        </div>
-                        <div className="ml-4 typing-effect-delay-3" style={{
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          width: '0',
-                          animation: 'typing 3.5s steps(40, end) 3s forwards',
-                          maxWidth: '100%'
-                        }}>
+                        </motion.div>
+                        <motion.div 
+                          className="ml-4 overflow-hidden whitespace-nowrap"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ 
+                            duration: 1.5, 
+                            delay: 2.7,
+                            ease: "easeInOut" 
+                          }}
+                        >
                           <span>--time-portal: 240ms;</span>
-                        </div>
-                        <div className="typing-effect-delay-4" style={{
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          width: '0',
-                          animation: 'typing 3.5s steps(40, end) 3.5s forwards',
-                          maxWidth: '100%'
-                        }}>
+                        </motion.div>
+                        <motion.div 
+                          className="overflow-hidden whitespace-nowrap"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ 
+                            duration: 1, 
+                            delay: 3.2,
+                            ease: "easeInOut" 
+                          }}
+                        >
                           <span>{`}`}</span>
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
                   </div>
@@ -119,96 +254,178 @@ export default function LandingPage() {
                     <p>Tailwind CSS v4 + Context7 + Claude 4</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
       </section>
       
       {/* 特性部分 */}
-      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30
+            }}
+          >
             <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
               配置指南特点
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               通过简单的步骤，快速配置 Cursor AI 设计规则，实现高效且一致的界面开发
             </p>
-          </div>
+          </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div ref={featuresRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div 
+              <motion.div 
                 key={index}
-                className="card-glass transform transition-all duration-[var(--time-std)] hover:translate-y-[-4px]"
-                style={{
-                  transitionDelay: `${100 * index}ms`
+                className="card-glass"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInViewFeatures ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 30,
+                  delay: index * 0.1 
                 }}
+                whileHover={{ y: -4, boxShadow: "var(--shadow-glass-strong)" }}
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 flex items-center justify-center mb-4">
+                <motion.div 
+                  className="w-12 h-12 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 flex items-center justify-center mb-4"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
                   {feature.icon}
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {feature.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
       
       {/* 工作流程部分 */}
-      <section className="py-20">
+      <section className="py-20 relative overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30
+            }}
+          >
             <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
               配置流程
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               四个简单步骤，轻松设置 Cursor AI 设计规则系统
             </p>
-          </div>
+          </motion.div>
           
-          <div className="relative max-w-4xl mx-auto">
-            <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-brand-200 dark:bg-brand-900 -translate-x-1/2 z-0"></div>
+          <div ref={workflowRef} className="relative max-w-4xl mx-auto">
+            <motion.div 
+              className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-brand-200 dark:bg-brand-900 -translate-x-1/2 z-0"
+              initial={{ height: "0%" }}
+              animate={isInViewWorkflow ? { height: "100%" } : { height: "0%" }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+            ></motion.div>
             
             {workflow.map((step, index) => (
-              <div key={index} className={`relative z-10 flex items-center gap-8 mb-16 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-brand-500/20 flex-shrink-0">
+              <motion.div 
+                key={index} 
+                className={`relative z-10 flex items-center gap-8 mb-16 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                animate={isInViewWorkflow ? { opacity: 1, x: 0 } : { opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 30,
+                  delay: 0.5 + index * 0.2 
+                }}
+              >
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-brand-500/20 flex-shrink-0"
+                  initial={{ scale: 0 }}
+                  animate={isInViewWorkflow ? { scale: 1 } : { scale: 0 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 20,
+                    delay: 0.7 + index * 0.2 
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                >
                   {index + 1}
-                </div>
-                <div className="card-glass flex-1">
+                </motion.div>
+                <motion.div 
+                  className="card-glass flex-1"
+                  whileHover={{ y: -4, boxShadow: "var(--shadow-glass-strong)" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
                   <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                     {step.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     {step.description}
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
       
       {/* 示例代码部分 */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section ref={codeExamplesRef} className="py-20 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30
+            }}
+          >
             <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
               设计规则文件示例
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               查看 .cursor/rules 文件夹中的规则文件示例，了解如何定义您的设计系统
             </p>
-          </div>
+          </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="card-glass overflow-hidden">
+            <motion.div 
+              className="card-glass overflow-hidden"
+              initial={{ opacity: 0, x: -50 }}
+              animate={isInViewCodeExamples ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                delay: 0.2 
+              }}
+              whileHover={{ y: -4, boxShadow: "var(--shadow-glass-strong)" }}
+            >
               <div className="bg-gray-900 rounded-xl p-4 font-mono text-sm text-white overflow-x-auto">
                 <pre>
 {`---
@@ -238,9 +455,20 @@ alwaysApply: true
                   定义项目的设计理念、核心原则和组件标准，确保整个项目的设计一致性
                 </p>
               </div>
-            </div>
+            </motion.div>
             
-            <div className="card-glass overflow-hidden">
+            <motion.div 
+              className="card-glass overflow-hidden"
+              initial={{ opacity: 0, x: 50 }}
+              animate={isInViewCodeExamples ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                delay: 0.4 
+              }}
+              whileHover={{ y: -4, boxShadow: "var(--shadow-glass-strong)" }}
+            >
               <div className="bg-gray-900 rounded-xl p-4 font-mono text-sm text-white overflow-x-auto">
                 <pre>
 {`---
@@ -269,11 +497,10 @@ alwaysApply: true
                   专为数据密集型应用设计的高效布局规则，最大化屏幕空间利用率
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
-      
       
       <Footer />
     </div>
@@ -353,32 +580,5 @@ const workflow = [
   {
     title: "调整组件紧凑性",
     description: "根据具体需求，灵活调整组件的紧凑度，适应不同的应用场景，如数据密集型界面"
-  }
-];
-
-const cases = [
-  {
-    title: "企业管理系统",
-    description: "采用高密度UI设计模式，最大化信息展示效率"
-  },
-  {
-    title: "内容创作平台",
-    description: "使用标准设计系统，注重内容阅读体验和编辑流畅性"
-  },
-  {
-    title: "数据分析仪表板",
-    description: "应用高密度UI设计，配合横向优先布局展示复杂数据"
-  },
-  {
-    title: "电商平台",
-    description: "结合标准设计与紧凑组件，平衡视觉吸引力和信息密度"
-  },
-  {
-    title: "协作办公工具",
-    description: "使用响应式设计和紧凑布局，提升团队协作效率"
-  },
-  {
-    title: "学习管理系统",
-    description: "采用模块化组件和清晰的信息层级，优化学习体验"
   }
 ]; 
