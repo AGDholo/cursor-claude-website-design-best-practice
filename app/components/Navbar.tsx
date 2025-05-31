@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 
+// 定义导航项类型
+interface NavItem {
+  name: string;
+  href: string;
+  external?: boolean;
+}
+
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -63,11 +70,9 @@ export function Navbar() {
   });
 
   // 导航项目
-  const navItems = [
-    { name: '特性', href: '/features' },
-    { name: '设计系统', href: '/design-system' },
-    { name: '组件库', href: '/components' },
-    { name: '演示', href: '/demo' },
+  const navItems: NavItem[] = [
+    { name: 'GitHub', href: 'https://github.com/AGDholo', external: true },
+    { name: '演示', href: 'https://transferai.app/', external: true },
   ];
 
   return (
@@ -178,7 +183,10 @@ export function Navbar() {
             />
 
             {/* CTA 按钮 - macOS 风格 */}
-            <motion.button 
+            <motion.a 
+              href="https://gist.github.com/AGDholo/656c0cbbceb68d44e6b18954196f3ae2"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden md:inline-flex items-center justify-center px-4 py-2 ml-6 lg:ml-0 rounded-xl bg-gradient-to-b from-brand-500 via-brand-500 to-brand-600 dark:from-brand-400 dark:via-brand-400 dark:to-brand-500 text-white text-sm font-medium shadow-lg shadow-brand-500/20 dark:shadow-brand-400/20 border border-white/20 dark:border-neutral-700/20 flex-shrink-0 relative overflow-hidden"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
@@ -186,7 +194,7 @@ export function Navbar() {
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl" />
               <span className="relative">立即开始</span>
-            </motion.button>
+            </motion.a>
 
             {/* Mobile menu button - macOS 风格 */}
             <motion.button
@@ -246,6 +254,8 @@ export function Navbar() {
               >
                 <a
                   href={item.href}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block text-2xl font-medium text-neutral-900 dark:text-neutral-100 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200 py-3"
                 >
@@ -267,7 +277,10 @@ export function Navbar() {
           >
           </motion.div>
 
-          <motion.button 
+          <motion.a 
+            href="https://gist.github.com/AGDholo/656c0cbbceb68d44e6b18954196f3ae2"
+            target="_blank"
+            rel="noopener noreferrer"
             className="mt-8 inline-flex items-center justify-center px-8 py-3 rounded-xl bg-gradient-to-b from-brand-500 via-brand-500 to-brand-600 dark:from-brand-400 dark:via-brand-400 dark:to-brand-500 text-white text-lg font-medium shadow-lg shadow-brand-500/20 dark:shadow-brand-400/20 border border-white/20 dark:border-neutral-700/20 relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ 
@@ -281,7 +294,7 @@ export function Navbar() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl" />
             <span className="relative">立即开始</span>
-          </motion.button>
+          </motion.a>
         </div>
       </motion.div>
     </>
